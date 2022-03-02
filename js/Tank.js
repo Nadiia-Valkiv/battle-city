@@ -13,26 +13,6 @@ export default class Tank {
     this.update();
   }
 
-  left() {
-    this.x -= cellSize;
-    this.update();
-  }
-
-  right() {
-    this.x += cellSize;
-    this.update();
-  }
-
-  up() {
-    this.y -= cellSize;
-    this.update();
-  }
-
-  down() {
-    this.y += cellSize;
-    this.update();
-  }
-
   update() {
     this.elem.style["top"] = `${this.y}px`;
     this.elem.style["left"] = `${this.x}px`;
@@ -45,7 +25,7 @@ export default class Tank {
   }
 
   move() {
-    this.direction = "down";
+    this.direction = this.randomDirection();
 
     switch (this.direction) {
       case "up":
