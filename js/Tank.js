@@ -1,4 +1,5 @@
-import { cellSize, map } from "./map.js";
+import { cellSize, map} from "./map.js";
+let previousState = 'up';
 
 export default class Tank {
   constructor(x, y) {
@@ -25,30 +26,74 @@ export default class Tank {
   }
 
   move() {
-    this.direction = this.randomDirection();
+    if (Math.random() < 0.2) {
+      this.direction = this.randomDirection();
+    } else {
+        this.direction = previousState;
+    }
 
     switch (this.direction) {
       case "up":
-        map[this.mapColumn - 1][this.mapRow] = 1;
-        map[this.mapColumn][this.mapRow] = 0;
+        if (
+         map[this.mapColumn - 1] !== undefined  &&
+          map[this.mapColumn - 1][this.mapRow] === 0
+        ) {
+          map[this.mapColumn - 1][this.mapRow] = 1;
+          map[this.mapColumn][this.mapRow] = 0;
+          this.rotateTank(0);
+        } else {
+          this.move();
+        }
         break;
 
       case "down":
-        map[this.mapColumn + 1][this.mapRow] = 1;
-        map[this.mapColumn][this.mapRow] = 0;
+        if (
+            map[this.mapColumn + 1] !== undefined   &&
+          map[this.mapColumn + 1][this.mapRow] === 0 
+        ) {
+          map[this.mapColumn + 1][this.mapRow] = 1;
+          map[this.mapColumn][this.mapRow] = 0;
+          this.rotateTank(180);
+        } else {
+          this.move();
+        }
+
         break;
 
       case "left":
-        map[this.mapColumn][this.mapRow - 1] = 1;
-        map[this.mapColumn][this.mapRow] = 0;
+        if (
+             map[this.mapRow - 1] !== undefined &&
+          map[this.mapColumn][this.mapRow - 1] === 0 
+        ) {
+          map[this.mapColumn][this.mapRow - 1] = 1;
+          map[this.mapColumn][this.mapRow] = 0;
+          this.rotateTank(270);
+        } else {
+          this.move();
+        }
         break;
 
       case "right":
-        map[this.mapColumn][this.mapRow + 1] = 1;
-        map[this.mapColumn][this.mapRow] = 0;
+        if (
+            map[this.mapRow + 1] !== undefined &&
+          map[this.mapColumn][this.mapRow + 1] === 0
+        ) {
+          map[this.mapColumn][this.mapRow + 1] = 1;
+          map[this.mapColumn][this.mapRow] = 0;
+          this.rotateTank(90);
+        } else {
+          this.move();
+        }
         break;
       default:
         console.log("wrong direction");
     }
+    previousState = this.direction;
+    
+  }
+  rotateTank(degrees) {
+    const tank = document.getElementsByClassName("player")[0];
+    console.log(this.elem);
+    tank.style.transform = `rotate(${degrees}deg)`;
   }
 }

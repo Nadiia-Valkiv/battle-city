@@ -1,7 +1,7 @@
 import { map, mapLegend, cellSize } from "./map.js";
 import PlayerTank from "./PlayerTank.js";
 import EnemyTank from "./EnemyTank.js";
-const gameTimerInterval = 1000;
+const gameTimerInterval = 500;
 let playerLifeCount = 3;
 let enemyTanksCount = 21;
 let isGameOver = false;
@@ -47,8 +47,9 @@ function gameLoop() {
   if (isGameOver !== true) {
     let gameMap = document.querySelector("#game-map");
     gameMap.innerHTML = "";
-    playerTank.move();
+    // playerTank.move();
     gameInitialization();
+    playerTank.move();
     /**
      * вот именно в функции gameStep стоит разместить код, который будет выполняться на каждом шаге игрового цикла
      */
@@ -72,3 +73,5 @@ function gameStep() {
    * 6. создать новые танки на базах в случае, если кого-то убили на этом шаге
    */
 }
+
+
