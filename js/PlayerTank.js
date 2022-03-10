@@ -1,6 +1,6 @@
 import Tank from "./Tank.js";
 import Bullet from "./Bullet.js";
-import { mapLegend} from "./map.js";
+import { mapLegend } from "./map.js";
 
 export default class PlayerTank extends Tank {
     constructor(x, y) {
@@ -11,16 +11,16 @@ export default class PlayerTank extends Tank {
     changeDirection(event) {
         if (event !== undefined) {
             switch (event.key) {
-                case 'ArrowLeft':
+                case "ArrowLeft":
                     this.direction = "left";
                     break;
-                case 'ArrowRight':
+                case "ArrowRight":
                     this.direction = "right";
                     break;
-                case 'ArrowUp':
+                case "ArrowUp":
                     this.direction = "up";
                     break;
-                case 'ArrowDown':
+                case "ArrowDown":
                     this.direction = "down";
                     break;
                 default:
@@ -28,5 +28,4 @@ export default class PlayerTank extends Tank {
             }
         }
     }
-
 }

@@ -48,9 +48,10 @@ function gameInitialization() {
     document.addEventListener(
         "keydown",
         function (event) {
-            if (event.key === ' ') {
-                if(playerTank.isFiring === false) {
-                bullet = playerTank.fire();}
+            if (event.key === " ") {
+                if (playerTank.isFiring === false && !playerTank.bullet) {
+                    playerTank.fire();
+                }
             } else {
                 playerTank.changeDirection(event);
                 isPlayerTankMove = true;
@@ -78,9 +79,10 @@ function gameStep() {
         playerTank.move();
         isPlayerTankMove = false;
     }
-    if(bullet){bullet.move();}
-    
-    
+    if (playerTank.bullet) {
+        playerTank.bullet.move();
+    }
+
     // playerTank.move();
     /**
      * это то самое место, где стоит делать основные шаги игрового цикла
@@ -94,4 +96,4 @@ function gameStep() {
      */
 }
 
-export {gameTimerInterval}
+export { gameTimerInterval, playerTank };
