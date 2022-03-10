@@ -9,6 +9,8 @@ let isPlayerTankMove = false;
 let playerTank;
 const enemyTanks = [];
 
+let bullet = false;
+
 gameInitialization();
 
 setTimeout(function () {
@@ -46,8 +48,13 @@ function gameInitialization() {
     document.addEventListener(
         "keydown",
         function (event) {
-            playerTank.changeDirection(event);
-            isPlayerTankMove = true;
+            if (event.key === ' ') {
+                if(playerTank.isFiring === false) {
+                bullet = playerTank.fire();}
+            } else {
+                playerTank.changeDirection(event);
+                isPlayerTankMove = true;
+            }
         },
         false
     );
@@ -71,6 +78,9 @@ function gameStep() {
         playerTank.move();
         isPlayerTankMove = false;
     }
+    if(bullet){bullet.move();}
+    
+    
     // playerTank.move();
     /**
      * это то самое место, где стоит делать основные шаги игрового цикла
@@ -83,3 +93,5 @@ function gameStep() {
      * 6. создать новые танки на базах в случае, если кого-то убили на этом шаге
      */
 }
+
+export {gameTimerInterval}

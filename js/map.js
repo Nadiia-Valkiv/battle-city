@@ -22,5 +22,6 @@ const mapLegend = {
 };
 
 const cellSize = 64;
+const bulletSize = 8;
 
-export { map, mapLegend, cellSize };
+export { map, mapLegend, cellSize, bulletSize };

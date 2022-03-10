@@ -1,4 +1,5 @@
 import Tank from "./Tank.js";
+import Bullet from "./Bullet.js";
 import { mapLegend} from "./map.js";
 
 export default class PlayerTank extends Tank {
@@ -9,22 +10,23 @@ export default class PlayerTank extends Tank {
 
     changeDirection(event) {
         if (event !== undefined) {
-            switch (event.keyCode) {
-                case 37:
+            switch (event.key) {
+                case 'ArrowLeft':
                     this.direction = "left";
                     break;
-                case 39:
+                case 'ArrowRight':
                     this.direction = "right";
                     break;
-                case 38:
+                case 'ArrowUp':
                     this.direction = "up";
                     break;
-                case 40:
+                case 'ArrowDown':
                     this.direction = "down";
                     break;
                 default:
-                    console.log("wrong direction" + event.keyCode);
+                    console.log("wrong direction" + event.key);
             }
         }
     }
+
 }

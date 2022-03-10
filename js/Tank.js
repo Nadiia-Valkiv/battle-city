@@ -1,3 +1,4 @@
+import Bullet from "./Bullet.js";
 import { cellSize, map } from "./map.js";
 
 export default class Tank {
@@ -10,6 +11,7 @@ export default class Tank {
         this.direction = "up";
         this.previousState = "up";
         this.mark = mark;
+        this.isFiring = false;
     }
 
     move() {
@@ -88,5 +90,11 @@ export default class Tank {
 
     rotateTank(degrees) {
         this.elem.style.transform = `rotate(${degrees}deg)`;
+    }
+
+     fire(){
+         this.isFiring = true;
+         this.bullet = new Bullet(this.x, this.y, this.direction , this.elem);
+        return this.bullet;
     }
 }
