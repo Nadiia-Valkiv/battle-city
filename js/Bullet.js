@@ -1,5 +1,6 @@
-import { cellSize, bulletSize, map } from "./map.js";
-import { gameTimerInterval, playerTank } from "./main.js";
+import { cellSize, bulletSize, mapLegend } from "./map.js";
+import { playerTank } from "./App.js";
+import { gameTimerInterval} from "./constants.js";
 
 export default class Bullet {
     constructor(x, y, direction, tank) {
@@ -9,7 +10,6 @@ export default class Bullet {
         this.tank = tank;
         this.direction = direction;
         this.draw();
-        this.style();
         this.update();
         this.addBulletToMap();
     }
@@ -34,11 +34,8 @@ export default class Bullet {
         }
     }
 
-    style() {
-        this.el.classList.add("bullet");
-    }
-
     addBulletToMap() {
+        this.el.classList.add("bullet");
         let gameMap = document.querySelector("#game-map");
         gameMap.appendChild(this.el);
     }

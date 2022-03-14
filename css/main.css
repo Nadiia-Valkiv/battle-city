@@ -71,3 +71,7 @@ main {
     width: 8px;
     background-color: aliceblue;
 }
+
+.dark {
+    background-color: black;
+}
