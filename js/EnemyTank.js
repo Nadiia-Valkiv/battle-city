@@ -6,6 +6,7 @@ const directionSet = ["right", "left", "up", "down"];
 export default class EnemyTank extends Tank {
     constructor(x, y) {
         super(x, y, mapLegend.enemyBase);
+         this.type = 'enemy';
         this.elem.className += "game-object game-object__enemy-tank";
         this.rotateTank(180);
     }

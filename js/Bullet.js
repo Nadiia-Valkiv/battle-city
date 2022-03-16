@@ -2,6 +2,7 @@ import { cellSize, bulletSize, mapLegend, map } from "./map.js";
 import { playerTank } from "./App.js";
 import { gameTimerInterval, gameMap } from "./constants.js";
 import GameObject from "./GameObject.js";
+import PlayerTank from "./PlayerTank.js";
 
 export default class Bullet extends GameObject {
     constructor(x, y, direction, tank) {
@@ -90,21 +91,25 @@ export default class Bullet extends GameObject {
     up() {
         this.y = this.y - bulletSize;
         this.update();
+        this.targetFired(this.tank, this.checkTarget());
     }
 
     down() {
         this.y = this.y + bulletSize;
         this.update();
+        this.targetFired(this.tank, this.checkTarget());
     }
 
     left() {
         this.x = this.x - bulletSize;
         this.update();
+        this.targetFired(this.tank, this.checkTarget());
     }
 
     right() {
         this.x = this.x + bulletSize;
         this.update();
+        this.targetFired(this.tank, this.checkTarget());
     }
 
     getBulletPositionOnTheMap() {
@@ -132,6 +137,31 @@ export default class Bullet extends GameObject {
                 return "road";
             default:
                 return "border";
+        }
+    }
+
+    targetFired(tank, target) {
+        if (tank.bullet !== null) {
+            if (target === "wall") {
+                let row = Math.round((tank.bullet.y - bulletSize) / cellSize);
+                let column = Math.round((tank.bullet.x - bulletSize) / cellSize);
+
+                map[row][column] = 0;
+
+                let wallToRemove = document.getElementsByClassName(`wall${column*cellSize}${row*cellSize}`);
+                if (wallToRemove.length > 0) {
+                    wallToRemove[0].remove();
+                    tank.deleteBullet.call(tank);
+                }
+            }
+            if (target === "border") {
+                tank.deleteBullet.call(tank);
+            }
+            // if (target === "player" && tank.type === 'enemy') {
+            //     document.getElementsByClassName('game-object__player-tank')[0].remove();
+            //     tank.deleteBullet.call(tank);
+            //     playerTank = new PlayerTank();
+            // }
         }
     }
 }

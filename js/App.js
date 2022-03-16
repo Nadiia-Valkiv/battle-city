@@ -78,7 +78,6 @@ export default class App {
             tank.move();
             if (tank.bullet) {
                 tank.bullet.move();
-                this.targetFired(tank, tank.bullet.checkTarget());
             }
             if (!tank.isFiring && !tank.bullet) {
                 tank.fire();
@@ -91,23 +90,6 @@ export default class App {
         }
         if (playerTank.bullet) {
             playerTank.bullet.move();
-            this.targetFired(playerTank, playerTank.bullet.checkTarget());
-        }
-    }
-
-    targetFired(tank, target) {
-        if (target === "wall") {
-            let row = Math.round((tank.bullet.y - bulletSize) / cellSize);
-            let column = Math.round((tank.bullet.x - bulletSize) / cellSize);
-
-            map[row][column] = 0;
-
-            document.getElementsByClassName(`wall${column*cellSize}${row*cellSize}`)[0].remove();
-
-            tank.deleteBullet.call(tank);
-        }
-        if (target === "border") {
-            tank.deleteBullet.call(tank);
         }
     }
 }

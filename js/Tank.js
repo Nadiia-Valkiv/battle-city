@@ -16,9 +16,11 @@ export default class Tank extends GameObject {
     }
 
     deleteBullet() {
-        this.bullet.elem.remove();
-        this.bullet = null;
-        this.isFiring = false;
+        if (this.bullet !== null) {
+            this.bullet.elem.remove();
+            this.bullet = null;
+            this.isFiring = false;
+        }
     }
 
     move() {
@@ -105,43 +107,5 @@ export default class Tank extends GameObject {
         this.bullet = new Bullet(this.x, this.y, this.direction, this);
         this.bullet.move();
         return this.bullet;
-    }
-
-    validateBorder() {
-        if (this.bullet) {
-            if (
-                this.bullet.x < 0 ||
-                this.bullet.y < 0 ||
-                this.bullet.y > map.length * cellSize ||
-                this.bullet.x >= map[0].length * cellSize
-            ) {
-                console.log("border");
-                this.deleteBullet();
-                return;
-            }
-            if (
-                map[Math.floor(this.bullet.y / cellSize)][
-                    Math.floor(this.bullet.x / cellSize)
-                ] === mapLegend.wall ||
-                map[Math.floor((this.bullet.y + bulletSize) / cellSize)][
-                    Math.floor((this.bullet.x + bulletSize) / cellSize)
-                ] === mapLegend.wall
-            ) {
-                console.log("wall");
-
-                map[Math.floor(this.bullet.y / cellSize)][
-                    Math.floor(this.bullet.x / cellSize)
-                ] = 0;
-                //     map[Math.floor((this.bullet.y + bulletSize) / cellSize)][
-                //         Math.floor((this.bullet.x + bulletSize) / cellSize)
-                //     ] = 0;
-
-                //     gameMap.innerHTML += `<div class='game-object dark'
-                // style='position: absolute; top: ${Math.ceil(this.bullet.y)}px; left: ${
-                //         Math.ceil(this.bullet.x +  )
-                //     }px;'></div>`;
-                this.deleteBullet();
-            }
-        }
     }
 }
