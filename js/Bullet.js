@@ -1,18 +1,20 @@
-import { cellSize, bulletSize, mapLegend } from "./map.js";
+import { cellSize, bulletSize, mapLegend, map } from "./map.js";
 import { playerTank } from "./App.js";
-import { gameTimerInterval} from "./constants.js";
+import { gameTimerInterval, gameMap } from "./constants.js";
+import GameObject from "./GameObject.js";
 
-export default class Bullet {
+export default class Bullet extends GameObject {
     constructor(x, y, direction, tank) {
-        this.el = document.createElement("div");
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.tank = tank;
         this.direction = direction;
+        this.mapPositionRow = Math.floor(this.x / cellSize);
+        this.mapPositionColumn = Math.floor(this.x / cellSize);
         this.draw();
         this.update();
         this.addBulletToMap();
     }
+
     draw() {
         let dif = cellSize - bulletSize;
         switch (this.direction) {
@@ -35,14 +37,13 @@ export default class Bullet {
     }
 
     addBulletToMap() {
-        this.el.classList.add("bullet");
-        let gameMap = document.querySelector("#game-map");
-        gameMap.appendChild(this.el);
+        this.elem.classList.add("bullet");
+        gameMap.appendChild(this.elem);
     }
 
     update() {
-        this.el.style["top"] = `${this.y}px`;
-        this.el.style["left"] = `${this.x}px`;
+        this.elem.style["top"] = `${this.y}px`;
+        this.elem.style["left"] = `${this.x}px`;
     }
     move() {
         let timerId;
@@ -50,7 +51,7 @@ export default class Bullet {
             case "up":
                 timerId = setInterval(
                     () => this.up(),
-                    gameTimerInterval / bulletSize
+                    gameTimerInterval / 16
                 );
                 setTimeout(() => {
                     clearInterval(timerId);
@@ -59,7 +60,7 @@ export default class Bullet {
             case "down":
                 timerId = setInterval(
                     () => this.down(),
-                    gameTimerInterval / bulletSize
+                    gameTimerInterval / 16
                 );
                 setTimeout(() => {
                     clearInterval(timerId);
@@ -68,7 +69,7 @@ export default class Bullet {
             case "left":
                 timerId = setInterval(
                     () => this.left(),
-                    gameTimerInterval / bulletSize
+                    gameTimerInterval / 16
                 );
                 setTimeout(() => {
                     clearInterval(timerId);
@@ -77,7 +78,7 @@ export default class Bullet {
             case "right":
                 timerId = setInterval(
                     () => this.right(),
-                    gameTimerInterval / bulletSize
+                    gameTimerInterval / 16
                 );
                 setTimeout(() => {
                     clearInterval(timerId);
@@ -89,21 +90,48 @@ export default class Bullet {
     up() {
         this.y = this.y - bulletSize;
         this.update();
-        playerTank.validateBorder();
     }
+
     down() {
         this.y = this.y + bulletSize;
         this.update();
-        playerTank.validateBorder();
     }
+
     left() {
         this.x = this.x - bulletSize;
         this.update();
-        playerTank.validateBorder();
     }
+
     right() {
         this.x = this.x + bulletSize;
         this.update();
-        playerTank.validateBorder();
+    }
+
+    getBulletPositionOnTheMap() {
+        if (
+            Math.floor((this.y + bulletSize) / cellSize) >= 0 &&
+            Math.floor((this.y + bulletSize) / cellSize) < 14 &&
+            Math.floor((this.x + bulletSize) / cellSize) >= 0 &&
+            Math.floor((this.x + bulletSize) / cellSize) < 13
+        ) {
+            return map[Math.floor((this.y + bulletSize) / cellSize)][
+                Math.floor((this.x + bulletSize) / cellSize)
+            ];
+        }
+    }
+
+    checkTarget() {
+        switch (this.getBulletPositionOnTheMap()) {
+            case mapLegend.wall:
+                return "wall";
+            case mapLegend.enemyBase:
+                return "enemy";
+            case mapLegend.playerBase:
+                return "player";
+            case 0:
+                return "road";
+            default:
+                return "border";
+        }
     }
 }

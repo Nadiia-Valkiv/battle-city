@@ -14,11 +14,15 @@ html {
 .game-object__player-tank {
     background: url("../img/player-tank.png");
     background-size: contain;
+    /* transition-property: left, top;
+    transition-duration: 0.5s, 0.5s; */
 }
 
 .game-object__enemy-tank {
     background: url("../img/enemy-tank.png");
     background-size: contain;
+    /* transition-property: left, top;
+    transition-duration: 0.5s, 0.5s; */
 }
 
 .game-object__wall {
@@ -70,6 +74,8 @@ main {
     height: 8px;
     width: 8px;
     background-color: aliceblue;
+    transition-property: left, top;
+    transition-duration: 0.125s, 0.125s;
 }
 
 .dark {

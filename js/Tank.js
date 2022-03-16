@@ -5,7 +5,7 @@ import { cellSize, map, mapLegend, bulletSize } from "./map.js";
 
 export default class Tank extends GameObject {
     constructor(x, y, mark) {
-        super(x,y);
+        super(x, y);
         this.mapRow = this.x / cellSize;
         this.mapColumn = this.y / cellSize;
         this.direction = "up";
@@ -16,7 +16,7 @@ export default class Tank extends GameObject {
     }
 
     deleteBullet() {
-        this.bullet.el.remove();
+        this.bullet.elem.remove();
         this.bullet = null;
         this.isFiring = false;
     }
@@ -102,7 +102,8 @@ export default class Tank extends GameObject {
 
     fire() {
         this.isFiring = true;
-        this.bullet = new Bullet(this.x, this.y, this.direction, this.elem);
+        this.bullet = new Bullet(this.x, this.y, this.direction, this);
+        this.bullet.move();
         return this.bullet;
     }
 
@@ -127,18 +128,18 @@ export default class Tank extends GameObject {
                 ] === mapLegend.wall
             ) {
                 console.log("wall");
-                 
+
                 map[Math.floor(this.bullet.y / cellSize)][
                     Math.floor(this.bullet.x / cellSize)
                 ] = 0;
-            //     map[Math.floor((this.bullet.y + bulletSize) / cellSize)][
-            //         Math.floor((this.bullet.x + bulletSize) / cellSize)
-            //     ] = 0;
+                //     map[Math.floor((this.bullet.y + bulletSize) / cellSize)][
+                //         Math.floor((this.bullet.x + bulletSize) / cellSize)
+                //     ] = 0;
 
-            //     gameMap.innerHTML += `<div class='game-object dark' 
-            // style='position: absolute; top: ${Math.ceil(this.bullet.y)}px; left: ${
-            //         Math.ceil(this.bullet.x +  )
-            //     }px;'></div>`;
+                //     gameMap.innerHTML += `<div class='game-object dark'
+                // style='position: absolute; top: ${Math.ceil(this.bullet.y)}px; left: ${
+                //         Math.ceil(this.bullet.x +  )
+                //     }px;'></div>`;
                 this.deleteBullet();
             }
         }

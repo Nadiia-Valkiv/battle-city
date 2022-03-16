@@ -1,5 +1,5 @@
-import { map, mapLegend, cellSize } from "./map.js";
-import { gameTimerInterval } from "./constants.js";
+import { map, mapLegend, cellSize, bulletSize } from "./map.js";
+import { gameTimerInterval, gameMap } from "./constants.js";
 import PlayerTank from "./PlayerTank.js";
 import EnemyTank from "./EnemyTank.js";
 import Wall from "./Wall.js";
@@ -21,15 +21,13 @@ export default class App {
     }
 
     gameInitialization() {
-        let gameMap = document.querySelector("#game-map");
-
         this.enemyTanks.splice(0, this.enemyTanks.length);
 
         for (let i = 0; i < map.length; i++) {
             for (let j = 0; j < map[i].length; j++) {
                 const currentElement = map[i][j];
                 if (currentElement === mapLegend.wall) {
-                    this.walls.push(new Wall(j * cellSize, i * cellSize))
+                    this.walls.push(new Wall(j * cellSize, i * cellSize));
                 } else if (currentElement === mapLegend.playerBase) {
                     playerTank = new PlayerTank(j * cellSize, i * cellSize);
                 } else if (currentElement === mapLegend.enemyBase) {
@@ -40,8 +38,7 @@ export default class App {
             }
         }
 
-
-         this.walls.forEach((wall) => {
+        this.walls.forEach((wall) => {
             gameMap.appendChild(wall.elem);
         });
 
@@ -49,10 +46,9 @@ export default class App {
         playerTank.update();
         this.enemyTanks.forEach((tank) => {
             gameMap.appendChild(tank.elem);
-        });
-               this.enemyTanks.forEach((tank) => {
             tank.update();
         });
+
         document.addEventListener(
             "keydown",
             function (event) {
@@ -80,13 +76,38 @@ export default class App {
     gameStep() {
         this.enemyTanks.forEach((tank) => {
             tank.move();
+            if (tank.bullet) {
+                tank.bullet.move();
+                this.targetFired(tank, tank.bullet.checkTarget());
+            }
+            if (!tank.isFiring && !tank.bullet) {
+                tank.fire();
+            }
         });
+
         if (playerTank.isTankMove) {
             playerTank.move();
             playerTank.isTankMove = false;
         }
         if (playerTank.bullet) {
             playerTank.bullet.move();
+            this.targetFired(playerTank, playerTank.bullet.checkTarget());
+        }
+    }
+
+    targetFired(tank, target) {
+        if (target === "wall") {
+            let row = Math.round((tank.bullet.y - bulletSize) / cellSize);
+            let column = Math.round((tank.bullet.x - bulletSize) / cellSize);
+
+            map[row][column] = 0;
+
+            document.getElementsByClassName(`wall${column*cellSize}${row*cellSize}`)[0].remove();
+
+            tank.deleteBullet.call(tank);
+        }
+        if (target === "border") {
+            tank.deleteBullet.call(tank);
         }
     }
 }
