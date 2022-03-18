@@ -1,13 +1,10 @@
 import Bullet from "./Bullet.js";
 import GameObject from "./GameObject.js";
-import { cellSize, map, mapLegend, bulletSize } from "./map.js";
-// import { gameMap } from "./main.js";
+import { cellSize, map} from "./map.js";
 
 export default class Tank extends GameObject {
     constructor(x, y, mark) {
         super(x, y);
-        this.mapRow = this.x / cellSize;
-        this.mapColumn = this.y / cellSize;
         this.direction = "up";
         this.previousState = "up";
         this.mark = mark;
@@ -27,12 +24,12 @@ export default class Tank extends GameObject {
         switch (this.direction) {
             case "up":
                 this.rotateTank(0);
-                //TODO
+                const mapColumnUp = this.mapColumn - 1;
                 if (
-                    map[this.mapColumn - 1] !== undefined &&
-                    map[this.mapColumn - 1][this.mapRow] === 0
+                    map[mapColumnUp] !== undefined &&
+                    map[mapColumnUp][this.mapRow] === 0
                 ) {
-                    map[this.mapColumn - 1][this.mapRow] = this.mark;
+                    map[mapColumnUp][this.mapRow] = this.mark;
                     map[this.mapColumn][this.mapRow] = 0;
                     this.y -= cellSize;
                     this.mapColumn -= 1;
@@ -43,11 +40,12 @@ export default class Tank extends GameObject {
 
             case "down":
                 this.rotateTank(180);
+                const mapColumnDown = this.mapColumn + 1;
                 if (
-                    map[this.mapColumn + 1] !== undefined &&
-                    map[this.mapColumn + 1][this.mapRow] === 0
+                    map[mapColumnDown] !== undefined &&
+                    map[mapColumnDown][this.mapRow] === 0
                 ) {
-                    map[this.mapColumn + 1][this.mapRow] = this.mark;
+                    map[mapColumnDown][this.mapRow] = this.mark;
                     map[this.mapColumn][this.mapRow] = 0;
                     this.y += cellSize;
                     this.mapColumn += 1;
@@ -59,11 +57,12 @@ export default class Tank extends GameObject {
 
             case "left":
                 this.rotateTank(270);
+                const mapRowLeft = this.mapRow - 1;
                 if (
-                    map[this.mapColumn][this.mapRow - 1] !== undefined &&
-                    map[this.mapColumn][this.mapRow - 1] === 0
+                    map[this.mapColumn][mapRowLeft] !== undefined &&
+                    map[this.mapColumn][mapRowLeft] === 0
                 ) {
-                    map[this.mapColumn][this.mapRow - 1] = this.mark;
+                    map[this.mapColumn][mapRowLeft] = this.mark;
                     map[this.mapColumn][this.mapRow] = 0;
                     this.x -= cellSize;
                     this.mapRow -= 1;
@@ -74,11 +73,12 @@ export default class Tank extends GameObject {
 
             case "right":
                 this.rotateTank(90);
+                const mapRowRight = this.mapRow + 1;
                 if (
-                    map[this.mapColumn][this.mapRow + 1] !== undefined &&
-                    map[this.mapColumn][this.mapRow + 1] === 0
+                    map[this.mapColumn][mapRowRight] !== undefined &&
+                    map[this.mapColumn][mapRowRight] === 0
                 ) {
-                    map[this.mapColumn][this.mapRow + 1] = this.mark;
+                    map[this.mapColumn][mapRowRight] = this.mark;
                     map[this.mapColumn][this.mapRow] = 0;
                     this.x += cellSize;
                     this.mapRow += 1;

@@ -1,16 +1,16 @@
 import { cellSize, bulletSize, mapLegend, map } from "./map.js";
-import { playerTank } from "./App.js";
 import { gameTimerInterval, gameMap } from "./constants.js";
 import GameObject from "./GameObject.js";
 import PlayerTank from "./PlayerTank.js";
+import {playerTank} from "./App.js";
 
 export default class Bullet extends GameObject {
     constructor(x, y, direction, tank) {
         super(x, y);
         this.tank = tank;
         this.direction = direction;
-        this.mapPositionRow = Math.floor(this.x / cellSize);
-        this.mapPositionColumn = Math.floor(this.x / cellSize);
+        this.mapPositionRow = Math.floor(this.mapRow);
+        this.mapPositionColumn = Math.floor(this.mapColumn);
         this.draw();
         this.update();
         this.addBulletToMap();
@@ -21,17 +21,16 @@ export default class Bullet extends GameObject {
         switch (this.direction) {
             case "up":
                 this.x += dif / 2 - 1;
+                this.y += dif
                 break;
             case "down":
                 this.x += dif / 2 + 1;
-                this.y += dif;
                 break;
             case "left":
-                // this.x += 29;
                 this.y += dif / 2;
+                this.x += dif
                 break;
             case "right":
-                this.x += dif;
                 this.y += dif / 2 - 1;
                 break;
         }
@@ -157,11 +156,11 @@ export default class Bullet extends GameObject {
             if (target === "border") {
                 tank.deleteBullet.call(tank);
             }
-            // if (target === "player" && tank.type === 'enemy') {
-            //     document.getElementsByClassName('game-object__player-tank')[0].remove();
-            //     tank.deleteBullet.call(tank);
-            //     playerTank = new PlayerTank();
-            // }
+            if (target === "player" && tank.type === 'enemy') {
+                // document.getElementsByClassName('game-object__player-tank')[0].remove();
+                // tank.deleteBullet.call(tank);
+                // playerTank = new PlayerTank(4*64, 13*64);
+            }
         }
     }
 }

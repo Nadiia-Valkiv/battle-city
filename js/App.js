@@ -12,7 +12,6 @@ export default class App {
         this.isGameOver = false;
         this.enemyTanks = [];
         this.walls = [];
-        this.bullet = false;
     }
 
     startGame() {
@@ -25,6 +24,7 @@ export default class App {
 
         for (let i = 0; i < map.length; i++) {
             for (let j = 0; j < map[i].length; j++) {
+                
                 const currentElement = map[i][j];
                 if (currentElement === mapLegend.wall) {
                     this.walls.push(new Wall(j * cellSize, i * cellSize));
@@ -68,7 +68,6 @@ export default class App {
     gameLoop() {
         if (this.isGameOver !== true) {
             this.gameStep();
-
             setTimeout(() => this.gameLoop(), gameTimerInterval);
         }
     }
