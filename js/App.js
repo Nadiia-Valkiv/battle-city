@@ -1,14 +1,25 @@
-import { map, mapLegend, cellSize, bulletSize } from "./map.js";
-import { gameTimerInterval, gameMap } from "./constants.js";
+import {
+    gameTimerInterval,
+    gameMap,
+    map,
+    mapLegend,
+    cellSize,
+    amountOfPlayerLife,
+    amountOfEnemyLife,
+} from "./constants.js";
 import PlayerTank from "./PlayerTank.js";
 import EnemyTank from "./EnemyTank.js";
 import Wall from "./Wall.js";
 let playerTank = null;
 
+function newTank(tank) {
+    playerTank = tank;
+}
+
 export default class App {
     constructor() {
-        this.playerLifeCount = 3;
-        this.enemyTanksCount = 21;
+        this.playerLifeCount = amountOfPlayerLife;
+        this.enemyTanksCount = amountOfEnemyLife;
         this.isGameOver = false;
         this.enemyTanks = [];
         this.walls = [];
@@ -24,7 +35,6 @@ export default class App {
 
         for (let i = 0; i < map.length; i++) {
             for (let j = 0; j < map[i].length; j++) {
-                
                 const currentElement = map[i][j];
                 if (currentElement === mapLegend.wall) {
                     this.walls.push(new Wall(j * cellSize, i * cellSize));
@@ -87,10 +97,11 @@ export default class App {
             playerTank.move();
             playerTank.isTankMove = false;
         }
+
         if (playerTank.bullet) {
             playerTank.bullet.move();
         }
     }
 }
 
-export { playerTank };
+export { playerTank, newTank };

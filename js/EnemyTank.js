@@ -1,12 +1,10 @@
 import Tank from "./Tank.js";
-import { mapLegend } from "./map.js";
-
-const directionSet = ["right", "left", "up", "down"];
+import { mapLegend, directionSet } from "./constants.js";
 
 export default class EnemyTank extends Tank {
     constructor(x, y) {
         super(x, y, mapLegend.enemyBase);
-         this.type = 'enemy';
+        this.type = "enemy";
         this.elem.className += "game-object game-object__enemy-tank";
         this.rotateTank(180);
     }

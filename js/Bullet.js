@@ -1,8 +1,15 @@
-import { cellSize, bulletSize, mapLegend, map } from "./map.js";
-import { gameTimerInterval, gameMap } from "./constants.js";
+import {
+    gameTimerInterval,
+    gameMap,
+    cellSize,
+    bulletSize,
+    mapLegend,
+    map,
+} from "./constants.js";
 import GameObject from "./GameObject.js";
 import PlayerTank from "./PlayerTank.js";
-import {playerTank} from "./App.js";
+import { playerTank, newTank } from "./App.js";
+import { game } from "./main.js";
 
 export default class Bullet extends GameObject {
     constructor(x, y, direction, tank) {
@@ -21,14 +28,14 @@ export default class Bullet extends GameObject {
         switch (this.direction) {
             case "up":
                 this.x += dif / 2 - 1;
-                this.y += dif
+                this.y += dif;
                 break;
             case "down":
                 this.x += dif / 2 + 1;
                 break;
             case "left":
                 this.y += dif / 2;
-                this.x += dif
+                this.x += dif;
                 break;
             case "right":
                 this.y += dif / 2 - 1;
@@ -45,44 +52,30 @@ export default class Bullet extends GameObject {
         this.elem.style["top"] = `${this.y}px`;
         this.elem.style["left"] = `${this.x}px`;
     }
+
+    directionHandler(direction) {
+        const timerId = setInterval(
+            () => direction.call(this),
+            gameTimerInterval / (2 * bulletSize)
+        );
+        setTimeout(() => {
+            clearInterval(timerId);
+        }, gameTimerInterval);
+    }
+
     move() {
-        let timerId;
         switch (this.direction) {
             case "up":
-                timerId = setInterval(
-                    () => this.up(),
-                    gameTimerInterval / 16
-                );
-                setTimeout(() => {
-                    clearInterval(timerId);
-                }, gameTimerInterval);
+                this.directionHandler(this.up);
                 break;
             case "down":
-                timerId = setInterval(
-                    () => this.down(),
-                    gameTimerInterval / 16
-                );
-                setTimeout(() => {
-                    clearInterval(timerId);
-                }, gameTimerInterval);
+                this.directionHandler(this.down);
                 break;
             case "left":
-                timerId = setInterval(
-                    () => this.left(),
-                    gameTimerInterval / 16
-                );
-                setTimeout(() => {
-                    clearInterval(timerId);
-                }, gameTimerInterval);
+                this.directionHandler(this.left);
                 break;
             case "right":
-                timerId = setInterval(
-                    () => this.right(),
-                    gameTimerInterval / 16
-                );
-                setTimeout(() => {
-                    clearInterval(timerId);
-                }, gameTimerInterval);
+                this.directionHandler(this.right);
                 break;
         }
     }
@@ -114,9 +107,9 @@ export default class Bullet extends GameObject {
     getBulletPositionOnTheMap() {
         if (
             Math.floor((this.y + bulletSize) / cellSize) >= 0 &&
-            Math.floor((this.y + bulletSize) / cellSize) < 14 &&
+            Math.floor((this.y + bulletSize) / cellSize) < map.length &&
             Math.floor((this.x + bulletSize) / cellSize) >= 0 &&
-            Math.floor((this.x + bulletSize) / cellSize) < 13
+            Math.floor((this.x + bulletSize) / cellSize) < map[0].length
         ) {
             return map[Math.floor((this.y + bulletSize) / cellSize)][
                 Math.floor((this.x + bulletSize) / cellSize)
@@ -143,11 +136,15 @@ export default class Bullet extends GameObject {
         if (tank.bullet !== null) {
             if (target === "wall") {
                 let row = Math.round((tank.bullet.y - bulletSize) / cellSize);
-                let column = Math.round((tank.bullet.x - bulletSize) / cellSize);
+                let column = Math.round(
+                    (tank.bullet.x - bulletSize) / cellSize
+                );
 
                 map[row][column] = 0;
 
-                let wallToRemove = document.getElementsByClassName(`wall${column*cellSize}${row*cellSize}`);
+                let wallToRemove = document.getElementsByClassName(
+                    `wall${column * cellSize}${row * cellSize}`
+                );
                 if (wallToRemove.length > 0) {
                     wallToRemove[0].remove();
                     tank.deleteBullet.call(tank);
@@ -156,7 +153,19 @@ export default class Bullet extends GameObject {
             if (target === "border") {
                 tank.deleteBullet.call(tank);
             }
-            if (target === "player" && tank.type === 'enemy') {
+            if (target === "player" && tank.type === "enemy") {
+                document
+                    .getElementsByClassName("game-object__player-tank")[0]
+                    .remove();
+                tank.deleteBullet.call(tank);
+                game.playerLifeCount--;
+                document.getElementById("playerCounter").innerHTML =
+                    game.playerLifeCount;
+                newTank(new PlayerTank(4 * 64, 13 * 64));
+                playerTank.update();
+                gameMap.appendChild(playerTank.elem);
+                // playerTank.update();
+
                 // document.getElementsByClassName('game-object__player-tank')[0].remove();
                 // tank.deleteBullet.call(tank);
                 // playerTank = new PlayerTank(4*64, 13*64);

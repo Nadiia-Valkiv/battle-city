@@ -1,6 +1,6 @@
 import Bullet from "./Bullet.js";
 import GameObject from "./GameObject.js";
-import { cellSize, map} from "./map.js";
+import { cellSize, map } from "./constants.js";
 
 export default class Tank extends GameObject {
     constructor(x, y, mark) {
@@ -86,8 +86,6 @@ export default class Tank extends GameObject {
                     this.changeDirection();
                 }
                 break;
-            default:
-                console.log("wrong direction");
         }
         this.previousState = this.direction;
         this.update();

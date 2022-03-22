@@ -1,10 +1,10 @@
 import Tank from "./Tank.js";
-import { mapLegend } from "./map.js";
+import { mapLegend } from "./constants.js";
 
 export default class PlayerTank extends Tank {
     constructor(x, y) {
         super(x, y, mapLegend.playerBase);
-        this.type = 'player';
+        this.type = "player";
         this.isTankMove = false;
         this.elem.className += "game-object player game-object__player-tank";
     }
