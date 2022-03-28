@@ -1,31 +1,54 @@
-import Tank from "./Tank.js";
-import { mapLegend } from "./constants.js";
+import Tank from './Tank.js';
+import PlayerBullet from './PlayerBullet.js';
+import {
+    mapLegend,
+    player,
+    gameObjectCssClass,
+    playerTankCssClass,
+    left,
+    right,
+    up,
+    down,
+    arrowLeft,
+    arrowRight,
+    arrowUp,
+    arrowDown,
+} from './constants.js';
 
 export default class PlayerTank extends Tank {
     constructor(x, y) {
         super(x, y, mapLegend.playerBase);
-        this.type = "player";
+        this.type = player;
+        this.targetType = mapLegend.playerBase;
         this.isTankMove = false;
-        this.elem.className += "game-object player game-object__player-tank";
+        this.elem.className += `${gameObjectCssClass} ${playerTankCssClass}`;
+    }
+
+    static newPlayer(x, y) {
+        return new PlayerTank(x, y);
+    }
+
+    fire() {
+        this.isFiring = true;
+        this.bullet = new PlayerBullet(this.x, this.y, this.direction, this);
+        this.bullet.move();
     }
 
     changeDirection(event) {
         if (event !== undefined) {
             switch (event.key) {
-                case "ArrowLeft":
-                    this.direction = "left";
+                case arrowLeft:
+                    this.direction = left;
                     break;
-                case "ArrowRight":
-                    this.direction = "right";
+                case arrowRight:
+                    this.direction = right;
                     break;
-                case "ArrowUp":
-                    this.direction = "up";
+                case arrowUp:
+                    this.direction = up;
                     break;
-                case "ArrowDown":
-                    this.direction = "down";
+                case arrowDown:
+                    this.direction = down;
                     break;
-                default:
-                    console.log("wrong direction" + event.key);
             }
         }
     }

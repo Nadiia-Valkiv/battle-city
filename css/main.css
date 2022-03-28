@@ -15,14 +15,16 @@ html {
     background: url("../img/player-tank.png");
     background-size: contain;
     transition-property: left, top;
-    transition-duration: 1s, 1s;
+    transition-duration: 0.5s;
+    transition-timing-function: linear;
 }
 
 .game-object__enemy-tank {
     background: url("../img/enemy-tank.png");
     background-size: contain;
     transition-property: left, top;
-    transition-duration: 1s, 1s;
+    transition-duration: 0.5s;
+    transition-timing-function: linear;
 }
 
 .game-object__wall {
@@ -80,4 +82,12 @@ main {
 
 .dark {
     background-color: black;
+}
+
+#player-life, #enemy-life {
+    font-size: 2em;
+}
+
+#player-life {
+    margin-top: 40px;
 }

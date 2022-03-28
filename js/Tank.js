@@ -1,19 +1,29 @@
-import Bullet from "./Bullet.js";
-import GameObject from "./GameObject.js";
-import { cellSize, map } from "./constants.js";
+import Bullet from './Bullet.js';
+import GameObject from './GameObject.js';
+import {
+    cellSize,
+    down,
+    left,
+    map,
+    mapLegend,
+    right,
+    up,
+    top,
+} from './constants.js';
+import { checkIsNotUndefined, checkIsRoad, updateMap } from './function.js';
 
 export default class Tank extends GameObject {
     constructor(x, y, mark) {
         super(x, y);
-        this.direction = "up";
-        this.previousState = "up";
+        this.direction = up;
+        this.previousState = up;
         this.mark = mark;
         this.isFiring = false;
         this.bullet = null;
     }
 
     deleteBullet() {
-        if (this.bullet !== null) {
+        if (this.hasTankBullet()) {
             this.bullet.elem.remove();
             this.bullet = null;
             this.isFiring = false;
@@ -22,15 +32,15 @@ export default class Tank extends GameObject {
 
     move() {
         switch (this.direction) {
-            case "up":
+            case up:
                 this.rotateTank(0);
                 const mapColumnUp = this.mapColumn - 1;
                 if (
-                    map[mapColumnUp] !== undefined &&
-                    map[mapColumnUp][this.mapRow] === 0
+                    checkIsNotUndefined(mapColumnUp) &&
+                    checkIsRoad(mapColumnUp, this.mapRow)
                 ) {
-                    map[mapColumnUp][this.mapRow] = this.mark;
-                    map[this.mapColumn][this.mapRow] = 0;
+                    updateMap(mapColumnUp, this.mapRow, this.mark);
+                    this.updateMapLegendToRoad();
                     this.y -= cellSize;
                     this.mapColumn -= 1;
                 } else {
@@ -38,15 +48,15 @@ export default class Tank extends GameObject {
                 }
                 break;
 
-            case "down":
+            case down:
                 this.rotateTank(180);
                 const mapColumnDown = this.mapColumn + 1;
                 if (
-                    map[mapColumnDown] !== undefined &&
-                    map[mapColumnDown][this.mapRow] === 0
+                    checkIsNotUndefined(mapColumnDown) &&
+                    checkIsRoad(mapColumnDown, this.mapRow)
                 ) {
-                    map[mapColumnDown][this.mapRow] = this.mark;
-                    map[this.mapColumn][this.mapRow] = 0;
+                    updateMap(mapColumnDown, this.mapRow, this.mark);
+                    this.updateMapLegendToRoad();
                     this.y += cellSize;
                     this.mapColumn += 1;
                 } else {
@@ -55,15 +65,15 @@ export default class Tank extends GameObject {
 
                 break;
 
-            case "left":
+            case left:
                 this.rotateTank(270);
                 const mapRowLeft = this.mapRow - 1;
                 if (
                     map[this.mapColumn][mapRowLeft] !== undefined &&
-                    map[this.mapColumn][mapRowLeft] === 0
+                    checkIsRoad(this.mapColumn, mapRowLeft)
                 ) {
-                    map[this.mapColumn][mapRowLeft] = this.mark;
-                    map[this.mapColumn][this.mapRow] = 0;
+                    updateMap(this.mapColumn, mapRowLeft, this.mark);
+                    this.updateMapLegendToRoad();
                     this.x -= cellSize;
                     this.mapRow -= 1;
                 } else {
@@ -71,15 +81,15 @@ export default class Tank extends GameObject {
                 }
                 break;
 
-            case "right":
+            case right:
                 this.rotateTank(90);
                 const mapRowRight = this.mapRow + 1;
                 if (
                     map[this.mapColumn][mapRowRight] !== undefined &&
-                    map[this.mapColumn][mapRowRight] === 0
+                    checkIsRoad(this.mapColumn, mapRowRight)
                 ) {
-                    map[this.mapColumn][mapRowRight] = this.mark;
-                    map[this.mapColumn][this.mapRow] = 0;
+                    updateMap(this.mapColumn, mapRowRight, this.mark);
+                    this.updateMapLegendToRoad();
                     this.x += cellSize;
                     this.mapRow += 1;
                 } else {
@@ -90,20 +100,30 @@ export default class Tank extends GameObject {
         this.previousState = this.direction;
         this.update();
     }
+    updateMapLegendToRoad() {
+        updateMap(this.mapColumn, this.mapRow, mapLegend.road);
+    }
 
     update() {
-        this.elem.style["top"] = `${this.y}px`;
-        this.elem.style["left"] = `${this.x}px`;
+        this.elem.style[top] = `${this.y}px`;
+        this.elem.style[left] = `${this.x}px`;
     }
 
     rotateTank(degrees) {
         this.elem.style.transform = `rotate(${degrees}deg)`;
     }
 
-    fire() {
+    fire() {    
         this.isFiring = true;
         this.bullet = new Bullet(this.x, this.y, this.direction, this);
         this.bullet.move();
+    }
+
+    removeTankFromDOM(className) {
+        document.getElementsByClassName(className)[0].remove();
+    }
+
+    hasTankBullet() {
         return this.bullet;
     }
 }

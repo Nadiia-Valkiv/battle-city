@@ -6,27 +6,77 @@ import {
     cellSize,
     amountOfPlayerLife,
     amountOfEnemyLife,
-} from "./constants.js";
-import PlayerTank from "./PlayerTank.js";
-import EnemyTank from "./EnemyTank.js";
-import Wall from "./Wall.js";
-let playerTank = null;
-
-function newTank(tank) {
-    playerTank = tank;
-}
+    gameWinMessage,
+    gameLoseMessage,
+    enemyCounter,
+    playerCounter,
+    whiteSpace,
+    keydown,
+} from './constants.js';
+import PlayerTank from './PlayerTank.js';
+import EnemyTank from './EnemyTank.js';
+import Wall from './Wall.js';
+import {updateMap} from './function.js';
 
 export default class App {
     constructor() {
         this.playerLifeCount = amountOfPlayerLife;
-        this.enemyTanksCount = amountOfEnemyLife;
+        this.enemyTanksLifeCount = amountOfEnemyLife;
         this.isGameOver = false;
+        this.enemyTanksBases = [];
+        this.playerTankBase = null;
+        this.playerTank = null;
         this.enemyTanks = [];
         this.walls = [];
     }
 
+    eliminateTank() {
+        this.removePlayerTank()
+        if (this.playerLifeCount <= 0) {
+            this.gameOver(gameLoseMessage);
+        }
+        this.createNewPlayerTank()
+        gameMap.appendChild(this.playerTank.elem);
+    }
+
+    removePlayerTank(){
+        this.playerLifeCount--;
+        this.addAmountTanksLifeToDom(playerCounter, this.playerLifeCount);
+        updateMap(this.playerTank.getMapColumn(),this.playerTank.getMapRow(), mapLegend.road )
+        this.playerTank.deleteBullet();
+        this.playerTank.removeTankFromDOM('game-object__player-tank');
+    }
+
+    createNewPlayerTank(){
+        this.playerTank = PlayerTank.newPlayer(
+            this.playerTankBase[0] * cellSize,
+            this.playerTankBase[1] * cellSize
+        );
+        this.playerTank.update();
+        updateMap(this.playerTank.getMapColumn(), this.playerTank.getMapRow(),mapLegend.playerBase)
+    }
+
+    eliminateEnemyTank(enemyTankIndex) {
+        this.enemyTanksLifeCount--;
+        updateMap(this.enemyTanks[enemyTankIndex].getMapColumn(),this.enemyTanks[enemyTankIndex].getMapRow(),mapLegend.road)
+        this.enemyTanks[enemyTankIndex].deleteBullet();
+        this.addAmountTanksLifeToDom(enemyCounter, this.enemyTanksLifeCount);
+        if (this.enemyTanksLifeCount <= 0) {
+            this.gameOver(gameWinMessage);
+        }
+        const randomBase = this.getRandomEnemyBase();
+        this.enemyTanks.splice(
+            enemyTankIndex,
+            1,
+            new EnemyTank(randomBase[0] * cellSize, randomBase[1] * cellSize)
+        );
+        this.enemyTanks[enemyTankIndex].update();
+        updateMap(this.enemyTanks[enemyTankIndex].getMapColumn(),this.enemyTanks[enemyTankIndex].getMapRow(),mapLegend.enemyBase)
+        gameMap.appendChild(this.enemyTanks[enemyTankIndex].elem);
+    }
+
     startGame() {
-        this.gameInitialization();
+        this.gameInitialization();   
         setTimeout(() => this.gameLoop(), gameTimerInterval);
     }
 
@@ -39,11 +89,16 @@ export default class App {
                 if (currentElement === mapLegend.wall) {
                     this.walls.push(new Wall(j * cellSize, i * cellSize));
                 } else if (currentElement === mapLegend.playerBase) {
-                    playerTank = new PlayerTank(j * cellSize, i * cellSize);
+                    this.playerTank = new PlayerTank(
+                        j * cellSize,
+                        i * cellSize
+                    );
+                    this.playerTankBase = [j, i];
                 } else if (currentElement === mapLegend.enemyBase) {
                     this.enemyTanks.push(
                         new EnemyTank(j * cellSize, i * cellSize)
                     );
+                    this.enemyTanksBases.push([j, i]);
                 }
             }
         }
@@ -52,27 +107,32 @@ export default class App {
             gameMap.appendChild(wall.elem);
         });
 
-        gameMap.appendChild(playerTank.elem);
-        playerTank.update();
+        gameMap.appendChild(this.playerTank.elem);
+        this.playerTank.update();
         this.enemyTanks.forEach((tank) => {
             gameMap.appendChild(tank.elem);
             tank.update();
         });
 
         document.addEventListener(
-            "keydown",
-            function (event) {
-                if (event.key === " ") {
-                    if (playerTank.isFiring === false && !playerTank.bullet) {
-                        playerTank.fire();
+            keydown,
+            (event) => {
+                if (event.key === whiteSpace) {
+                    if (
+                        this.playerTank.isFiring === false &&
+                        !this.playerTank.hasTankBullet()
+                    ) {
+                        this.playerTank.fire();
                     }
                 } else {
-                    playerTank.changeDirection(event);
-                    playerTank.isTankMove = true;
+                    this.playerTank.changeDirection(event);
+                    this.playerTank.isTankMove = true;
                 }
             },
             false
         );
+        this.addAmountTanksLifeToDom(enemyCounter, this.enemyTanksLifeCount);
+        this.addAmountTanksLifeToDom(playerCounter, this.playerLifeCount);
     }
 
     gameLoop() {
@@ -82,26 +142,39 @@ export default class App {
         }
     }
 
+    gameOver(message) {
+        alert(message);
+        location.reload();
+    }
+
     gameStep() {
         this.enemyTanks.forEach((tank) => {
             tank.move();
             if (tank.bullet) {
                 tank.bullet.move();
             }
-            if (!tank.isFiring && !tank.bullet) {
+            if (!tank.isFiring && !tank.hasTankBullet()) {
                 tank.fire();
             }
         });
 
-        if (playerTank.isTankMove) {
-            playerTank.move();
-            playerTank.isTankMove = false;
+        if (this.playerTank.isTankMove) {
+            this.playerTank.move();
+            this.playerTank.isTankMove = false;
         }
 
-        if (playerTank.bullet) {
-            playerTank.bullet.move();
+        if (this.playerTank.hasTankBullet()) {
+            this.playerTank.bullet.move();
         }
     }
-}
 
-export { playerTank, newTank };
+    addAmountTanksLifeToDom(id, amount) {
+        document.getElementById(id).innerHTML = amount;
+    }
+
+    getRandomEnemyBase() {
+        return this.enemyTanksBases[
+            Math.floor(Math.random() * this.enemyTanksBases.length)
+        ];
+    }
+}

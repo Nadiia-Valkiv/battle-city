@@ -1,4 +1,4 @@
-import App from "./App.js";
+import App from './App.js';
 const game = new App();
 game.startGame();
 
